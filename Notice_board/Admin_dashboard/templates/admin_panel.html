@@ -1,0 +1,121 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .truncate-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .notice-box {
+            transition: all 0.3s ease;
+        }
+        .expanded {
+            width: 100%;
+            height: auto;
+        }
+        .delete-link {
+            position: absolute;
+            left: 1rem;
+            bottom: 0.5rem;
+        }
+        .edit-link {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+        }
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="bg-red-600 p-4 flex justify-between items-center sticky-header">
+        <h1 class="text-white text-2xl">Admin Dashboard</h1>
+        <div class="flex items-center">
+            <div class="relative">
+                <!-- Search bar can be added here if needed -->
+            </div>
+            <div class="ml-4 flex items-center">
+                <i class="fas fa-sign-out-alt text-white text-2xl"></i>
+                <span class="text-white ml-2"><a href="{{ url_for('logout') }}">Log-Out</a></span>
+            </div>
+        </div>
+    </div>
+    <div class="flex flex-col md:flex-row">
+        <div class="w-full md:w-1/4 p-4">
+            <div class="bg-white p-4 rounded-lg shadow-md flex items-center">
+                <a href="{{ url_for('add_notice') }}" class="flex items-center">
+                    <i class="fas fa-plus text-red-600 text-4xl"></i>
+                    <span class="text-red-600 text-xl ml-2" style="transform: translateY(-4px);">Add Notice</span>
+                </a>
+            </div>
+        </div>
+        <div class="w-full md:w-3/4 p-4">
+            <form method="GET" action="{{ url_for('admin_panel') }}" class="flex mb-6">
+                <input type="text" name="search" placeholder="Search notice..." value="{{ search or '' }}" class="flex-1 px-4 py-2 border border-gray-300 rounded-l focus:outline-none">
+                <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded-r hover:bg-red-700 transition"><i class="fas fa-search"></i> Search</button>
+            </form>
+            <h2 class="text-xl font-bold mb-4">All Notices</h2>
+            <div class="space-y-4">
+                {% for notice in notices %}
+                <div class="bg-white p-4 rounded-lg shadow-md notice-box relative" id="notice-box-{{ notice.id }}">
+                    <a href="{{ url_for('edit_notice', notice_id=notice.id) }}" class="text-blue-500 hover:underline edit-link">✏️</a>
+                    <h3 class="text-xl font-bold">{{ notice.title }}</h3>
+                    <p class="mt-2 truncate-text" id="content-{{ notice.id }}">{{ notice.content }}</p>
+                    {% if notice.content|length > 50 %}
+                    <button onclick="toggleReadMore('{{ notice.id }}')" class="text-blue-500 hover:underline mt-2" id="toggle-{{ notice.id }}">Read More</button>
+                    {% endif %}
+                    {% if notice.filename %}
+                    <div class="mt-2">
+                        {% if notice.filename.endswith('.pdf') %}
+                        <a href="{{ url_for('uploaded_file', filename=notice.filename) }}" target="_blank" class="text-blue-500 hover:underline">View PDF</a>
+                        {% elif notice.filename.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+                        <img src="{{ url_for('uploaded_file', filename=notice.filename) }}" alt="Notice image" class="mt-2 rounded">
+                        {% elif notice.filename.endswith(('.docx', '.xlsx', '.pptx')) %}
+                        <a href="{{ url_for('uploaded_file', filename=notice.filename) }}" target="_blank" class="text-blue-500 hover:underline">Download File</a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <p class="mt-2 text-sm text-gray-600">Posted on: {{ notice.created_at }}</p>
+                    <div class="flex justify-between mt-4">
+                        <a href="{{ url_for('delete_notice', notice_id=notice.id) }}" class="text-red-500 hover:underline delete-link" onclick="return confirm('Delete this notice?');">⛔</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <script>
+        function toggleReadMore(id) {
+            const content = document.getElementById(`content-${id}`);
+            const toggleButton = document.getElementById(`toggle-${id}`);
+            const noticeBox = document.getElementById(`notice-box-${id}`);
+            const allNoticeBoxes = document.querySelectorAll('.notice-box');
+
+            if (content.classList.contains('truncate-text')) {
+                allNoticeBoxes.forEach(box => {
+                    if (box.id !== `notice-box-${id}`) {
+                        box.classList.remove('expanded');
+                    }
+                });
+                content.classList.remove('truncate-text');
+                noticeBox.classList.add('expanded');
+                toggleButton.textContent = 'Read Less';
+            } else {
+                content.classList.add('truncate-text');
+                noticeBox.classList.remove('expanded');
+                toggleButton.textContent = 'Read More';
+            }
+        }
+    </script>
+</body>
+</html>

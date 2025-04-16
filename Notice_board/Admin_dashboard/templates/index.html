@@ -1,0 +1,97 @@
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>
+   College Notice Board
+  </title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cardo:wght@400;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="https://cdn.tailwindcss.com">
+  </script>
+  <style>
+   body {
+     font-family: 'Cardo', serif;
+     display: flex;
+     flex-direction: column;
+     min-height: 100vh;
+   }
+   header {
+     position: sticky;
+     top: 0;
+     z-index: 1000;
+   }
+   main {
+     flex: 1;
+   }
+  </style>
+ </head>
+ <body class="bg-gray-100">
+  <header class="bg-white shadow">
+   <div class="w-full flex items-center justify-between p-4" style="background-image: linear-gradient(to left, #8B0000, #FF0000);">
+
+    <h1 class="text-4xl font-bold text-white">
+     Notice Board
+    </h1>
+    <i class="fas fa-bars text-2xl text-white">
+    </i>
+   </div>
+  </header>
+  <div class="py-4">
+   <div class="container mx-auto">
+    <div class="relative">
+     <form method="GET">
+      <input class="w-full p-2 rounded-full border-2 border-red-300" name="search" placeholder="Search notice..." type="text" value="{{ request.args.get('search', '') }}"/>
+      <button class="absolute right-0 top-0 mt-1.5 mr-3 text-black" type="submit">
+       <i class="fas fa-search text-2xl">
+       </i>
+      </button>
+     </form>
+    </div>
+   </div>
+  </div>
+  <main class="container mx-auto mt-4 mb-20">
+   {% for notice in notices %}
+   <div class="bg-white shadow rounded-lg p-4 mb-4 overflow-hidden">
+    <h2 class="text-xl font-bold">
+     {{ notice.title }}
+    </h2>
+    <p class="text-gray-600">
+     {{ notice.content }}
+    </p>
+    {% if notice.filename %}
+    {% if notice.filename.endswith('.pdf') %}
+    <a class="text-blue-500 hover:underline" href="{{ url_for('uploaded_file', filename=notice.filename) }}" target="_blank">
+     📄 View PDF
+    </a>
+    {% elif notice.filename.endswith(('.png', '.jpg', '.jpeg', '.gif')) %}
+    <img alt="Notice Image" class="mt-2" src="{{ url_for('uploaded_file', filename=notice.filename) }}" width="200"/>
+    {% elif notice.filename.endswith(('.docx', '.xlsx', '.pptx')) %}
+    <a class="text-blue-500 hover:underline" href="{{ url_for('uploaded_file', filename=notice.filename) }}" target="_blank">
+     📎 Download File
+    </a>
+    {% endif %}
+    {% endif %}
+    <p class="text-gray-500 text-sm mt-2">
+     <small>
+      Posted on: {{ notice.created_at }}
+     </small>
+    </p>
+   </div>
+   {% endfor %}
+  </main>
+  <footer class="bg-red-600 py-4">
+   <div class="container mx-auto flex justify-around text-white">
+    <a class="hover:underline" href="#">
+     Home
+    </a>
+    <a class="hover:underline" href="#">
+     Pay online
+    </a>
+    <a class="hover:underline" href="#">
+     About
+    </a>
+   </div>
+  </footer>
+ </body>
+</html>

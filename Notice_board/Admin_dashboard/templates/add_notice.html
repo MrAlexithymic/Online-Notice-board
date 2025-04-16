@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if notice %}Edit{% else %}Add{% endif %} Notice</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff7f7f, #c0392b); /* Red gradient background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff; /* White background for the container */
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 400px; /* Adjusted width for more space */
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #c0392b; /* Dark red color for the heading */
+        }
+        input[type="text"],
+        textarea,
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #c0392b; /* Dark red border */
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        textarea {
+            height: 150px; /* Increased height for the textarea */
+            resize: none; /* Prevent resizing */
+        }
+        input[type="text"]:focus,
+        textarea:focus {
+            border-color: #e74c3c; /* Brighter red on focus */
+            outline: none;
+        }
+        button {
+            background-color: #c0392b; /* Dark red button */
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #e74c3c; /* Brighter red on hover */
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            color: #c0392b; /* Dark red for the link */
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        a:hover {
+            color: #e74c3c; /* Brighter red on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>{% if notice %}Edit{% else %}Add{% endif %} Notice</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Title" value="{{ notice.title if notice else '' }}" required><br>
+            <textarea name="content" placeholder="Notice content" required>{{ notice.content if notice else '' }}</textarea><br>
+            <input type="file" name="file"><br><br>
+            <button type="submit">{% if notice %}Update{% else %}Post{% endif %}</button>
+        </form>
+        <a href="{{ url_for('admin_panel') }}">⬅ Back to Dashboard</a>
+    </div>
+</body>
+</html>

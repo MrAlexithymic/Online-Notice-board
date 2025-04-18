@@ -4,13 +4,14 @@ import mysql.connector
 
 app = Flask(__name__)
 
-# MySQL connection
+
 conn = mysql.connector.connect(
     host="localhost",
-    user="root",
-    password="admin",
+    user="notice_user",
+    password="notice123",
     database="college_notices"
 )
+
 cursor = conn.cursor(dictionary=True)
 
 @app.route('/')

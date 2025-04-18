@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, send_from_directory
 import mysql.connector
-import os
+
 
 app = Flask(__name__)
 
